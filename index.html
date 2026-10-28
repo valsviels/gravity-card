@@ -317,12 +317,17 @@ function escapeHtml(v){return String(v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':
 
 function focusPark(i){
   activePark=i;
+  document.getElementById("side").scrollTop=0;
   if(!map.hasLayer(markers[i])){ markers[i].addTo(map); }
   map.flyTo([P[i][2],P[i][3]],11);
   loadWeather(i);
   draw();
 }
-function closeParkDetail(){ activePark=null; draw(); }
+function closeParkDetail(){
+  activePark=null;
+  document.getElementById("side").scrollTop=0;
+  draw();
+}
 
 function show(i){
   if(filter==="seen" && !isSeen(i)){ return false; }
@@ -384,9 +389,14 @@ function draw(){
 
   // Parkliste oder Detailansicht – nie beides gleichzeitig
   const tools=document.querySelector(".tools");
+  const header=document.querySelector("#side > header");
+  const routeSection=document.querySelector("#side > .sec");
   let l="";
   if(activePark!==null){
     const i=activePark;
+    // Detailansicht bekommt den gesamten Seitenbereich: Dashboard und Routenbox ausblenden.
+    header.style.display="none";
+    routeSection.style.display="none";
     tools.style.display="none";
     l='<div class="park-detail '+(isSeen(i)?"seen":"open")+'">'
       +'<div class="detail-head"><div><h2>'+escapeHtml(P[i][0])+'</h2><div class="meta">'+FLAG[P[i][1]]+' '+P[i][1]+'</div></div><button class="close-detail" aria-label="Zurück zur Parkliste" title="Zurück zur Parkliste" onclick="closeParkDetail()">×</button></div>'
@@ -395,6 +405,8 @@ function draw(){
       +'<a class="b" href="'+url(i)+'" target="_blank" rel="noopener">Offizielle Website ↗</a></div>'
       +trailHtml(i)+wHtml(i)+'</div>';
   }else{
+    header.style.display="";
+    routeSection.style.display="";
     tools.style.display="flex";
     for(let i=0;i<P.length;i++){
       if(!show(i)){ continue; }
