@@ -13,81 +13,23 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
 <style>
-:root{--bg:#0f1115;--panel:#171a21;--card:#1f232c;--line:#2a2f3a;--fg:#eef1f6;--mut:#8b93a3;--open:#ff7a2f;--seen:#3ddc84;--route:#4da3ff;color-scheme:dark}
-*{box-sizing:border-box}
-html,body{height:100%;margin:0}
-body{background:var(--bg);color:var(--fg);font:15px/1.4 system-ui,-apple-system,"Segoe UI",sans-serif}
-#app{display:grid;grid-template-columns:400px 1fr;height:100%;height:100dvh}
-#side{padding-left:env(safe-area-inset-left);background:var(--panel);overflow-y:auto;border-right:1px solid var(--line)}
-#map{height:100%;background:#e8e4dc}
-.leaflet-container{font:inherit}
-.leaflet-popup-content-wrapper,.leaflet-popup-tip{background:var(--card);color:var(--fg);border-radius:14px}
-.leaflet-popup-content{margin:14px 16px}
-.leaflet-container a.leaflet-popup-close-button{color:var(--mut)}
-
-header{padding:20px 20px 14px;position:sticky;top:0;background:var(--panel);z-index:5;border-bottom:1px solid var(--line)}
-h1{margin:0;font-size:22px;letter-spacing:-.3px}
-h1 span{color:var(--open)}
-.sub{color:var(--mut);font-size:13px;margin-top:2px}
-.bar{height:8px;background:var(--card);border-radius:99px;margin-top:12px;overflow:hidden}
-.bar div{height:100%;width:0;background:linear-gradient(90deg,var(--open),var(--seen));border-radius:99px;transition:width .4s}
-.cnt{font-size:13px;margin-top:6px;color:var(--mut)}
-.cnt b{color:var(--fg)}
-
-.sec{padding:14px 20px 0}
-.route{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px}
-.route h2{margin:0 0 8px;font-size:14px;text-transform:uppercase;letter-spacing:.8px;color:var(--mut)}
-.stop{display:flex;align-items:center;gap:8px;padding:4px 0;font-size:14px}
-.num{width:22px;height:22px;border-radius:50%;background:var(--route);color:#06121f;font-weight:700;font-size:12px;display:flex;align-items:center;justify-content:center;flex:none}
-.stop .x{margin-left:auto;cursor:pointer;color:var(--mut);padding:0 4px}
-.go{display:block;text-align:center;margin-top:10px;padding:11px;border-radius:10px;background:var(--route);color:#06121f;font-weight:700;text-decoration:none}
-.go.off{background:var(--line);color:var(--mut);pointer-events:none}
-.clear{background:none;border:0;color:var(--mut);cursor:pointer;margin-top:8px;font-size:13px}
-
-.tools{display:flex;gap:8px;flex-wrap:wrap;padding:14px 20px 8px}
-.chip{border:1px solid var(--line);background:var(--card);color:var(--fg);padding:6px 14px;border-radius:99px;cursor:pointer;font-size:13px}
-.chip.on{background:var(--fg);color:var(--bg);border-color:var(--fg)}
-#q{flex:1;min-width:120px;background:var(--card);border:1px solid var(--line);color:var(--fg);padding:6px 14px;border-radius:99px;font-size:16px}
-
-.item{margin:0 20px 8px;padding:12px;background:var(--card);border:1px solid var(--line);border-radius:14px;cursor:pointer;transition:border-color .15s}
-.item:hover{border-color:var(--mut)}
-.item.seen{border-left:4px solid var(--seen)}
-.item.open{border-left:4px solid var(--open)}
-.name{font-weight:600}
-.meta{color:var(--mut);font-size:12px;margin:2px 0 10px}
-.btns{display:flex;gap:6px;flex-wrap:wrap}
-.b{border:1px solid var(--line);background:transparent;color:var(--fg);border-radius:8px;padding:5px 10px;font-size:12px;cursor:pointer;text-decoration:none}
-.b.on-seen{background:var(--seen);color:#06210f;border-color:var(--seen)}
-.b.on-route{background:var(--route);color:#06121f;border-color:var(--route)}
-.pad{height:calc(20px + env(safe-area-inset-bottom))}
-
-/* Marker */
-.pin{width:30px;height:30px;border-radius:50%;border:3px solid #fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:13px;color:#fff;box-shadow:0 2px 8px rgba(0,0,0,.5)}
-.pin.open{background:var(--open)}
-.pin.seen{background:var(--seen);color:#06210f}
-.pin.sel{background:var(--route);color:#06121f;transform:scale(1.2)}
-.pop b{font-size:16px}
-.pop .meta{margin-bottom:10px}
-
-.leg{margin:2px 0 2px 30px;font-size:12px;color:var(--mut)}
-.wx{margin-top:10px;font-size:13px}
-.days{display:flex;gap:12px;margin-top:6px;text-align:center;font-size:12px}
-.days div div{white-space:nowrap}
-.pop .mut{font-size:12px;color:var(--mut);margin:6px 0}
-.pop a{color:var(--route)}
-@media (max-width:800px){
-  #app{grid-template-columns:1fr;grid-template-rows:42% 58%}
-  #map{order:-1}
-  #side{border-right:0}
-}
+:root{--bg:#f5f5f7;--panel:rgba(255,255,255,.94);--card:#fff;--line:#e5e5ea;--fg:#1d1d1f;--mut:#6e6e73;--open:#f47721;--seen:#218653;--route:#0878f9;--shadow:0 8px 28px rgba(0,0,0,.07);color-scheme:light}
+:root[data-theme="dark"]{--bg:#101114;--panel:rgba(25,26,30,.96);--card:#202126;--line:#34353b;--fg:#f5f5f7;--mut:#a1a1a8;--open:#ff8a3d;--seen:#48d597;--route:#58a6ff;--shadow:0 8px 28px rgba(0,0,0,.22);color-scheme:dark}
+*{box-sizing:border-box}html,body{height:100%;margin:0}body{background:var(--bg);color:var(--fg);font:14px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;letter-spacing:-.01em}
+#app{display:grid;grid-template-columns:minmax(340px,420px) 1fr;height:100%;height:100dvh;gap:0}#side{padding-left:env(safe-area-inset-left);background:var(--panel);backdrop-filter:blur(18px);overflow-y:auto;border-right:1px solid var(--line);z-index:2}#map{height:100%;background:#e8e4dc}.leaflet-container{font:inherit}.leaflet-popup-content-wrapper,.leaflet-popup-tip{background:var(--card);color:var(--fg);border-radius:16px}.leaflet-popup-content{margin:14px 16px}.leaflet-container a.leaflet-popup-close-button{color:var(--mut)}
+header{padding:22px 22px 16px;position:sticky;top:0;background:var(--panel);backdrop-filter:blur(18px);z-index:5;border-bottom:1px solid var(--line)}.headrow{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}h1{margin:0;font-size:23px;letter-spacing:-.8px;font-weight:750}h1 span{color:var(--open)}.sub{color:var(--mut);font-size:12px;margin-top:3px}.themebtn{border:1px solid var(--line);background:var(--card);color:var(--fg);border-radius:10px;padding:8px 10px;cursor:pointer;font-size:12px;white-space:nowrap}.bar{height:6px;background:var(--line);border-radius:99px;margin-top:15px;overflow:hidden}.bar div{height:100%;width:0;background:var(--seen);border-radius:99px;transition:width .3s}.cnt{font-size:12px;margin-top:7px;color:var(--mut)}.cnt b{color:var(--fg)}.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:14px}.stat{padding:10px;background:var(--card);border:1px solid var(--line);border-radius:12px}.stat strong{display:block;font-size:19px;letter-spacing:-.5px}.stat span{font-size:11px;color:var(--mut)}
+.sec{padding:14px 18px 0}.route{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px;box-shadow:var(--shadow)}.route h2{margin:0 0 9px;font-size:12px;text-transform:uppercase;letter-spacing:.7px;color:var(--mut)}.stop{display:flex;align-items:center;gap:8px;padding:4px 0;font-size:13px}.num{width:22px;height:22px;border-radius:50%;background:var(--route);color:white;font-weight:700;font-size:12px;display:flex;align-items:center;justify-content:center;flex:none}.stop .x{margin-left:auto;cursor:pointer;color:var(--mut);padding:0 4px}.orderbtn{border:1px solid var(--line);background:transparent;color:var(--mut);border-radius:6px;padding:1px 5px;cursor:pointer}.go{display:block;text-align:center;margin-top:10px;padding:11px;border-radius:11px;background:var(--route);color:white;font-weight:650;text-decoration:none}.go.off{background:var(--line);color:var(--mut);pointer-events:none}.clear{background:none;border:0;color:var(--mut);cursor:pointer;margin-top:8px;font-size:12px}.routeinfo{font-size:12px;color:var(--mut);margin-top:9px;line-height:1.5}.routeinfo strong{color:var(--fg)}
+.tools{display:flex;gap:7px;flex-wrap:wrap;padding:14px 18px 10px}.chip{border:1px solid var(--line);background:var(--card);color:var(--fg);padding:7px 12px;border-radius:99px;cursor:pointer;font-size:12px}.chip.on{background:var(--fg);color:var(--bg);border-color:var(--fg)}#q{flex:1;min-width:120px;background:var(--card);border:1px solid var(--line);color:var(--fg);padding:7px 13px;border-radius:99px;font-size:14px;outline:none}#q:focus{border-color:var(--route)}
+.item{margin:0 18px 8px;padding:13px;background:var(--card);border:1px solid var(--line);border-radius:14px;cursor:pointer;transition:border-color .15s,transform .15s}.item:hover{border-color:var(--mut);transform:translateY(-1px)}.item.seen{border-left:3px solid var(--seen)}.item.open{border-left:3px solid var(--open)}.name{font-weight:650;font-size:14px}.meta{color:var(--mut);font-size:12px;margin:3px 0 10px}.btns{display:flex;gap:6px;flex-wrap:wrap}.b{border:1px solid var(--line);background:transparent;color:var(--fg);border-radius:9px;padding:6px 10px;font-size:12px;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;justify-content:center}.b.on-seen{background:var(--seen);color:#06210f;border-color:var(--seen)}.b.on-route{background:var(--route);color:white;border-color:var(--route)}.pad{height:calc(20px + env(safe-area-inset-bottom))}.pin{width:30px;height:30px;border-radius:50%;border:3px solid #fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:12px;color:#fff;box-shadow:0 2px 8px rgba(0,0,0,.28)}.pin.open{background:var(--open)}.pin.seen{background:var(--seen);color:#06210f}.pin.sel{background:var(--route);color:#fff;transform:scale(1.15)}.pop b{font-size:15px}.pop .meta{margin-bottom:10px}.leg{margin:3px 0 4px 30px;font-size:11px;color:var(--mut)}.wx{margin-top:10px;font-size:12px}.days{display:flex;gap:12px;margin-top:6px;text-align:center;font-size:11px}.days div div{white-space:nowrap}.pop .mut{font-size:12px;color:var(--mut);margin:6px 0}.pop a{color:var(--route)}.trail-list{margin-top:8px;border-top:1px solid var(--line);padding-top:8px;font-size:12px}.trail-row{display:flex;justify-content:space-between;gap:10px;padding:4px 0}.trail-row span:last-child{color:var(--mut);white-space:nowrap}.trail-legend{display:flex;gap:8px;flex-wrap:wrap;font-size:11px;color:var(--mut);margin-top:8px}.dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:4px}
+@media(max-width:800px){#app{grid-template-columns:1fr;grid-template-rows:42% 58%}#map{order:-1}#side{border-right:0;border-top:1px solid var(--line)}header{padding-top:14px}.stats{margin-top:10px}.sec{padding-top:10px}}
 </style>
 </head>
 <body>
 <div id="app">
   <div id="side">
     <header>
-      <h1>Gravity <span>Card</span> Bikeparks</h1>
-      <div class="sub">Saison 2026 · 7 Länder · 1 Ticket</div>
+      <div class="headrow"><div><h1>Gravity <span>Card</span></h1><div class="sub">Bikepark Explorer · Saison 2026</div></div><button class="themebtn" id="themeBtn" type="button">Darstellung wechseln</button></div>
+      <div class="stats"><div class="stat"><strong id="statSeen">0</strong><span>Besucht</span></div><div class="stat"><strong id="statLeft">31</strong><span>Noch offen</span></div><div class="stat"><strong id="statCountries">0</strong><span>Länder</span></div></div>
       <div class="bar"><div id="prog"></div></div>
       <div class="cnt" id="cnt"></div>
     </header>
@@ -96,7 +38,7 @@ h1 span{color:var(--open)}
       <button class="chip on" data-f="all">Alle</button>
       <button class="chip" data-f="seen">Besucht</button>
       <button class="chip" data-f="open">Offen</button>
-      <input id="q" placeholder="Suchen…">
+      <input id="q" placeholder="Bikepark suchen…">
     </div>
     <div id="list"></div>
     <div class="pad"></div>
@@ -143,6 +85,8 @@ const P=[
 ];
 const FLAG={AT:"🇦🇹",CH:"🇨🇭",DE:"🇩🇪",CZ:"🇨🇿",SI:"🇸🇮",IT:"🇮🇹",PL:"🇵🇱"};
 const MAX=5;
+const ROUTING_URL="https://router.project-osrm.org/route/v1/driving/";
+let routeInfo=null, routeLoading=false, routeError="", routeSeq=0;
 
 let seen={}, sel=[], filter="all", query="";
 try{
@@ -150,29 +94,11 @@ try{
   sel=JSON.parse(localStorage.getItem("gc_sel")||"[]");
 }catch(e){ seen={}; sel=[]; }
 
-// Zweite Kopie in IndexedDB, wird bei jedem Speichern automatisch mitgeschrieben
-function idbOpen(cb){
-  if(!window.indexedDB){ return; }
-  const rq=indexedDB.open("gc",1);
-  rq.onupgradeneeded=function(){ rq.result.createObjectStore("kv"); };
-  rq.onsuccess=function(){ cb(rq.result); };
-}
-function idbSave(text){
-  idbOpen(function(db){ db.transaction("kv","readwrite").objectStore("kv").put(text,"backup"); });
-}
-function idbLoad(cb){
-  idbOpen(function(db){
-    const g=db.transaction("kv").objectStore("kv").get("backup");
-    g.onsuccess=function(){ cb(g.result); };
-  });
-}
-
 function save(){
   try{
     localStorage.setItem("gc_seen",JSON.stringify(seen));
     localStorage.setItem("gc_sel",JSON.stringify(sel));
   }catch(e){}
-  idbSave(backupText());
 }
 
 // Karte mit OpenStreetMap
@@ -198,7 +124,8 @@ strassen.addTo(map);
 L.control.layers({"Straßen":strassen,"OpenStreetMap":osm,"Gelände":gelaende,"Satellit":satellit}).addTo(map);
 
 const markers=[];
-const line=L.polyline([],{color:"#4da3ff",weight:3,dashArray:"8 8"}).addTo(map);
+const line=L.polyline([],{color:"#8b93a3",weight:2,dashArray:"4 7",opacity:.7}).addTo(map);
+const roadLine=L.geoJSON(null,{style:{color:"#0878f9",weight:5,opacity:.9}}).addTo(map);
 
 function url(i){ return "https://www.gravity-card.com/bikeparks/"+P[i][4]+"/?lang=en"; }
 function isSeen(i){ return seen[P[i][4]]===true; }
@@ -257,6 +184,7 @@ function popup(i){
     +'<button class="b'+(sel.indexOf(i)>=0?" on-route":"")+'" onclick="toggleSel('+i+')">+ Route</button>'
     +'<a class="b" href="'+url(i)+'" target="_blank" rel="noopener">Website ↗</a>'
     +"</div>"
+    +trailHtml(i)
     +wHtml(i)
     +"</div>";
 }
@@ -275,7 +203,7 @@ function toggleSel(i){
   if(k>=0){ sel.splice(k,1); }
   else if(sel.length<MAX){ sel.push(i); }
   else { alert("Maximal "+MAX+" Parks für die Route."); }
-  save(); draw();
+  save(); calculateRoadRoute();
 }
 function km(a,b){
   const r=Math.PI/180;
@@ -283,10 +211,31 @@ function km(a,b){
   const x=Math.pow(Math.sin(dLat/2),2)+Math.cos(P[a][2]*r)*Math.cos(P[b][2]*r)*Math.pow(Math.sin(dLon/2),2);
   return 2*6371*Math.asin(Math.sqrt(x));
 }
-// Grobe Fahrzeit: Straße ≈ 1,3 × Luftlinie, Schnitt 70 km/h
 function fahrt(k){
   const min=Math.round(k*1.3/70*60);
   return Math.floor(min/60)+" h "+(min%60)+" min";
+}
+function durationText(seconds){
+  const min=Math.round(seconds/60), h=Math.floor(min/60), m=min%60;
+  return h>0 ? h+" h "+m+" min" : m+" min";
+}
+async function calculateRoadRoute(){
+  const seq=++routeSeq; routeInfo=null; routeError=""; routeLoading=sel.length>=2;
+  roadLine.clearLayers();
+  if(sel.length<2){routeLoading=false;draw();return;}
+  draw();
+  const coords=sel.map(i=>P[i][3]+","+P[i][2]).join(";");
+  try{
+    const res=await fetch(ROUTING_URL+coords+"?overview=full&geometries=geojson&steps=false",{headers:{"Accept":"application/json"}});
+    if(!res.ok) throw new Error("Routing-Dienst antwortet nicht (HTTP "+res.status+")");
+    const data=await res.json();
+    if(data.code!=="Ok"||!data.routes||!data.routes[0]) throw new Error("Für diese Stopps wurde keine Straßenroute gefunden.");
+    if(seq!==routeSeq)return;
+    routeInfo={distance:data.routes[0].distance/1000,duration:data.routes[0].duration,legs:data.routes[0].legs||[],geometry:data.routes[0].geometry};
+    roadLine.addData({type:"Feature",properties:{},geometry:routeInfo.geometry});
+    if(routeInfo.geometry&&routeInfo.geometry.coordinates.length>1){map.fitBounds(roadLine.getBounds(),{padding:[35,35],maxZoom:8});}
+  }catch(e){if(seq===routeSeq)routeError=e.message||"Straßenroute nicht verfügbar.";}
+  if(seq===routeSeq){routeLoading=false;draw();}
 }
 function perms(a){
   if(a.length<=1){ return [a]; }
@@ -310,21 +259,61 @@ function bestOrder(){
     const l=pathLen(all[j]);
     if(l<bestLen){ best=all[j]; bestLen=l; }
   }
-  sel=best; save(); draw();
+  sel=best; save(); calculateRoadRoute();
 }
-function backupText(){
-  return JSON.stringify({seen:seen},null,2);
+function removeStop(k){ sel.splice(k,1); save(); calculateRoadRoute(); }
+function moveStop(k,delta){const j=k+delta;if(j<0||j>=sel.length)return;const t=sel[k];sel[k]=sel[j];sel[j]=t;save();calculateRoadRoute();}
+function clearRoute(){ sel=[]; save(); calculateRoadRoute(); }
+
+// Offizielle Trail-Listen. Nur Namen und Schwierigkeitsfarben anzeigen;
+// keine OSM-Abfragen oder erfundenen Streckenverläufe.
+const OFFICIAL_TRAILS={
+  "epic-bikepark-leogang":[
+    ["Steinberg Line by FOX","blue"],["Hangman II","blue"],["Flow Link by FOX","red"],["Hangman I","red"],["Flying Gangster","red"],["T-LINE by GoPro","red"],["Hot Shots fired by GoPro","black"],["Speedster","black"],["Antonius Trail","black"],["Bongo Bongo","black"],["Vali's Hölle","black"],["Hangover","black"]
+  ],
+  "saalbach-hinterglemm":[["Monti Trail","blue"],["Hacklberg Trail","blue"],["Panorama Trail","blue"],["Z-Line","red"],["X-Line","black"],["Pro Line","black"]],
+  "bikepark-serfaus-fiss-ladis":[["Milky Way","blue"],["Vuelta","blue"],["Morning Glory","blue"],["Strada del Sole","red"],["Supernatural","red"],["Freeride-Trail","red"],["Supernatural 2.0","red"],["Hill Bill","black"],["Downhillstrecke","black"]],
+  "schladming-dachstein":[["Bike Area","blue"],["Peak Flowline","blue"],["Stadium Flowline","blue"],["Uphill Flow Trail","blue"],["Rookie Downhill","red"],["Kessler Line","red"],["Downtown Line","red"],["Pro Downhill","black"],["99 Jumpline","black"],["Monster Jumpline","black"],["Jack Lumber Trail","black"],["Worldcup Downhill","black"],["Eiskar Trail","blue"],["Buckelwald Trail","blue"],["Schnepfenwald Trail","blue"],["Hochalm Trail","blue"],["Holzer Trail","red"],["Enduro Trail – Reiteralm","black"],["Hochalm Enduro Trail","black"],["Route 66","red"],["Gassl Trail","black"],["Reiteralm Junior Trails","blue"]],
+  "bike-kindom-park-lenzerheide":[["FLOWline","blue"],["PRIMEline","red"],["STYLEline","red"],["SHOREline","black"],["STRAIGHTline","black"]],
+  "bikepark-brandnertal":[["Tschoy Ride","blue"],["Tschäck the Ripper","red"],["Tscharlie Tschäplin","red"],["Enduro Trail","red"],["Tschack Norris","black"],["Tschina Wild","black"]],
+  "bike-republic-soelden":[["Eebme Line","blue"],["Ohn Line","blue"],["Harbe Line","blue"],["Troalen Line","blue"],["Lettn Line","blue"],["Gahe Line","blue"],["Teäre Line","red"],["Ollweite Line","red"],["Hupfar Line","red"],["Leiterberg Trail","red"],["Traien Trail","red"],["Gampe Trail","red"],["Windach Trail","red"],["Stallwies Trail","red"],["Zaahe Line","black"],["Olm Volle Line","black"],["Nene Trail","black"],["Bodenegg Trail","black"],["Gaislach Trail","black"],["Fernar Trail","black"]],
+  "3-laender-enduro-trails":[["Green Trail","blue"],["Plamort Trail","blue"],["Elven Trail","blue"],["Bunker Trail","red"],["Etsch Trail","red"],["Riatschwegele Trail","red"]],
+  "bad-kleinkirchheimer-flow-country-trail":[["Flow Country Trail","blue"],["Kaiserburg Trail","blue"],["Family Trail","blue"],["Nockbike Trails","red"],["Alter Almweg","red"]],
+  "biketrails-flims-laax":[["Foppa Trail","blue"],["Nagens Trail – Abschnitt 1","blue"],["Nagens Trail – Abschnitt 2","red"],["Runca Trail","red"],["Segnes Trail","red"],["Never End Trail","black"],["Greenvalley Trail","blue"]],
+  "bikepark-innsbruck":[["The Simple One","blue"],["The Chainless One","blue"],["The First One","red"],["The Shot One 1","red"],["Jumpline","red"],["The Straight One","black"],["The Wild One","black"],["The Rough One","black"]],
+  "bikepark-winterberg":[["Fairy Trail","blue"],["Schneewittchen Trail","blue"],["KyrHill","blue"],["SRAM Flow Country","blue"],["Fly By","blue"],["Jolli Jumper","red"],["Freeride","red"],["North Shore","red"],["Forrest Stump","red"],["Rocky Waldboa","red"],["Shreddy Mörphy","red"],["iXS Downhill Line","black"],["BLACK LINE 1.0","black"]],
+  "mtb-zone-bikepark-geisskopf":[["Flow Country Trail","blue"],["Uphill Flow","blue"],["X-Ride","blue"],["Jump Trails","red"],["Mallet-Trail","red"],["Jump Line","red"],["Enduro Trail 1","red"],["Enduro Trail 2","red"],["Transformers","red"],["Merida Timber Coaster","red"],["Downhill","black"],["Evil Eye 2.0 – You Go First","black"],["Secret Trail","black"]],
+  "bikepark-spicak":[["Spicy Freeride","blue"],["Freeride","red"],["Air & Stone","red"],["Struggle","black"],["Black Friday","black"]],
+  "bikepark-semmering":[["Schlingeltrail","blue"],["Family Wood","blue"],["Family Line","blue"],["Sweet & Sexy","red"],["Banana Flip","red"],["Northshoreline","red"],["Bunnyway","red"],["Airline","red"],["Fast & Tricky","red"],["Panorama Jump Line","red"],["Slopestyle Tableline","red"],["Speedline / Big Line","red"],["Downhill Line","black"]],
+  "mtb-zone-bikepark-willingen":[["Flow Country","blue"],["Freeride","red"],["Enduro Trail","red"],["Downhill","black"],["Slopestyle Line","black"]],
+  "mtb-zone-bikepark-petzen":[["Flow Country Trail","blue"],["Kärnten Flow Trail","blue"],["EWS Trail","red"],["Lärchen Trail","red"],["Thriller","black"]],
+  "maribor-bike-park":[["Flow Line","blue"],["Ruška Family","blue"],["Amerika Trail","blue"],["Jump Line","red"],["Bolfenk Trail","red"],["Red Fox Trail","red"],["Stream Line","red"],["Ruška Flow","red"],["World Cup","black"],["Fury Trail","black"],["Videc 2 Trail","black"]],
+  "flowtrails-kitz-kirchberg":[["Hahnenkamm Trail","blue"],["Lisi Osl Trail","blue"],["Fleckalm Trail","red"],["Gaisberg Trail","red"],["Wiegalm Trail","red"]],
+  "bikepark-lienz":[["Family Trail","blue"],["Welcome Trail","blue"],["Peter Sagan Trail","red"],["Alban Lakata Trail","red"],["Gassl Trail","black"]],
+  "paganella-bike":[["Easy Rider","blue"],["Hustle and Flow","blue"],["Willy Wonka","red"],["Giada Line","red"],["Apocalypse Now","black"],["Blade Runner","black"]],
+  "bike-park-szczyrk":[["Hip HopA","blue"],["Otik","red"],["Zbój","red"],["DH+","black"],["SahAira","black"]],
+  "bikepark-kronplatz":[["Gassl Trail","blue"],["Dragon Trail","blue"],["Herrnsteig","red"],["Franz Trail","red"],["Andreas Trail","black"]],
+  "val-di-sole-bikepark":[["Golden Eagle","red"],["Wild Grizzly","red"],["White Wolf","red"],["Black Snake","black"],["Four Cross","red"]],
+  "wexl-trails":[["Flowtrail","blue"],["Singletrail","red"],["Jump Line","red"],["Enduro Trail","black"]],
+  "bike-beats-alta-badia":[["Fle Trail","blue"],["Cör Trail","blue"],["Avëna Trail","red"],["Ödli Trail","red"],["Frara Trail","red"]],
+  "silvretta-bike-arena-ischgl-samnaun":[["Silva Trails","blue"],["Idalp Trail","blue"],["Alp Trida Enduro Trail","red"],["Velill Trail","red"],["Duty Free Trail","black"]],
+  "bikepark-lermoos-biberwier":[["Bachtl Trail 8031","blue"],["Family Trail 868","blue"],["Fun Trail 883","blue"],["Marienberg Trail 8026","blue"],["Barbarasteig / Rauhegasse Trail 869 & 870","red"],["Forest Aisle 865","red"],["Grubigalm 864","red"],["Wolfratshauser Trail 863","red"],["Blindsee Trail 866","black"],["Single Trail Schlägle 855","black"]],
+  "mottolino-bikepark":[["Take It Easy","blue"],["Enduro Natural Trail","blue"],["Flow Line","blue"],["EAS23","blue"],["First Ever","red"],["Stoner","red"],["Chemical Water","red"],["Panet","black"],["SIC58","black"],["Wild Sheep","black"],["Black Eye","black"],["D.H. 2005","black"]],
+  "trailarea-turracher-hoehe":[["Kornock Flowtrail","blue"],["ÜWI Flowtrail","blue"],["Almrush Trail","red"],["Schmuggler Trail","red"],["Zirben Trail","red"],["Ibahaps Trail","red"],["Kornock Drop","red"],["Earl Grey Trail","black"],["Tea House Trail","black"],["ÜWI Jump-Trail","black"]],
+  "bike-district-val-di-fassa":[["The Col","blue"],["Electric Line","red"],["9.90","red"],["All Fever","red"],["Titans","black"],["Infinity","black"]],
+  "trailpark-klinovec":[["Rubin","blue"],["Azur","blue"],["Baron","red"],["Downhill","black"],["Killer Miller","black"]]
+};
+function trailHtml(i){
+  const trails=OFFICIAL_TRAILS[P[i][4]];
+  if(!trails)return '<div class="trail-list"><div class="mut">Für diesen Park sind noch keine verlässlichen Trail-Daten hinterlegt.</div></div>';
+  const colors={blue:'#1688e8',red:'#ef4444',black:'#222'};
+  let h='<div class="trail-list"><b>Trails</b>';
+  trails.forEach(t=>{h+='<div class="trail-row"><span><i class="dot" style="background:'+colors[t[1]]+'"></i>'+escapeHtml(t[0])+'</span><span>'+({blue:'Blau',red:'Rot',black:'Schwarz'}[t[1]])+'</span></div>';});
+  h+='<div class="trail-legend"><span><i class="dot" style="background:'+colors.blue+'"></i>Blau</span><span><i class="dot" style="background:'+colors.red+'"></i>Rot</span><span><i class="dot" style="background:'+colors.black+'"></i>Schwarz</span></div></div>';
+  return h;
 }
-function loadText(t,quiet){
-  try{
-    const j=JSON.parse(t);
-    seen=j.seen||{};
-    save(); draw();
-    if(!quiet){ alert("Backup geladen."); }
-  }catch(err){ alert("Backup konnte nicht gelesen werden."); }
-}
-function removeStop(k){ sel.splice(k,1); save(); draw(); }
-function clearRoute(){ sel=[]; save(); draw(); }
+function escapeHtml(v){return String(v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+
 function focusPark(i){
   if(!map.hasLayer(markers[i])){ markers[i].addTo(map); }
   map.flyTo([P[i][2],P[i][3]],11);
@@ -351,6 +340,9 @@ function draw(){
   for(let i=0;i<P.length;i++){ if(isSeen(i)){ n++; } }
   document.getElementById("prog").style.width=(n/P.length*100)+"%";
   document.getElementById("cnt").innerHTML="<b>"+n+"</b> von "+P.length+" Parks besucht";
+  document.getElementById("statSeen").textContent=n;
+  document.getElementById("statLeft").textContent=P.length-n;
+  document.getElementById("statCountries").textContent=new Set(P.filter((p,i)=>isSeen(i)).map(p=>p[1])).size;
 
   // Marker
   for(let i=0;i<P.length;i++){
@@ -368,13 +360,20 @@ function draw(){
   for(let k=0;k<sel.length;k++){
     if(k>0){
       const d=km(sel[k-1],sel[k]); total+=d;
-      r+='<div class="leg">↓ '+Math.round(d)+' km Luftlinie · ca. '+fahrt(d)+'</div>';
+      r+='<div class="leg">↓ '+Math.round(d)+' km Luftlinie</div>';
     }
-    r+='<div class="stop"><div class="num">'+(k+1)+"</div>"+P[sel[k]][0]+'<span class="x" onclick="removeStop('+k+')">✕</span></div>';
+    r+='<div class="stop"><div class="num">'+(k+1)+"</div>"+P[sel[k]][0]+(k>0?'<button class="orderbtn" title="Nach oben" onclick="moveStop('+k+',-1)">↑</button>':'')+(k<sel.length-1?'<button class="orderbtn" title="Nach unten" onclick="moveStop('+k+',1)">↓</button>':'')+'<span class="x" onclick="removeStop('+k+')">✕</span></div>';
   }
-  if(sel.length>=2){ r+='<div class="leg">Gesamt: '+Math.round(total)+' km Luftlinie · ca. '+fahrt(total)+' (geschätzt)</div>'; }
-  if(sel.length>=3){ r+='<button class="b" style="margin-top:8px" onclick="bestOrder()">⚡ Beste Reihenfolge</button>'; }
-  if(sel.length>=2){ r+='<a class="go" href="'+routeUrl()+'" target="_blank" rel="noopener">Route in Google Maps öffnen</a>'; }
+  if(sel.length>=2){
+    if(routeLoading){r+='<div class="routeinfo">Straßenroute wird berechnet…</div>';}
+    else if(routeInfo){
+      r+='<div class="routeinfo"><strong>'+routeInfo.distance.toFixed(1)+' km Straße</strong> · ca. '+durationText(routeInfo.duration)+'<br>Die Angaben stammen vom OSRM-Straßenrouting.</div>';
+      for(let j=0;j<routeInfo.legs.length;j++){const leg=routeInfo.legs[j];r+='<div class="leg">Etappe '+(j+1)+': '+(leg.distance/1000).toFixed(1)+' km · '+durationText(leg.duration)+'</div>';}
+    } else {r+='<div class="routeinfo">'+(routeError||'Straßenroute noch nicht berechnet.')+'<br><button class="b" style="margin-top:6px" onclick="calculateRoadRoute()">Erneut berechnen</button></div>';}
+    r+='<div class="routeinfo">Zusätzlich: '+Math.round(total)+' km Luftlinie</div>';
+  }
+  if(sel.length>=3){ r+='<button class="b" style="margin-top:8px" onclick="bestOrder()">Reihenfolge nach Luftlinie optimieren</button>'; }
+  if(sel.length>=2){ r+='<a class="go" href="'+routeUrl()+'" target="_blank" rel="noopener">In Google Maps öffnen ↗</a>'; }
   else { r+='<a class="go off">Mindestens 2 Parks wählen</a>'; }
   if(sel.length>0){ r+='<button class="clear" onclick="clearRoute()">Route leeren</button>'; }
   document.getElementById("route").innerHTML=r;
@@ -397,9 +396,9 @@ function draw(){
 }
 
 // Filter + Suche
-document.querySelectorAll(".chip").forEach(function(b){
+document.querySelectorAll(".chip[data-f]").forEach(function(b){
   b.onclick=function(){
-    document.querySelectorAll(".chip").forEach(function(x){ x.classList.remove("on"); });
+    document.querySelectorAll(".chip[data-f]").forEach(function(x){ x.classList.remove("on"); });
     b.classList.add("on");
     filter=b.getAttribute("data-f");
     draw();
@@ -407,15 +406,17 @@ document.querySelectorAll(".chip").forEach(function(b){
 });
 document.getElementById("q").oninput=function(e){ query=e.target.value.toLowerCase(); draw(); };
 
+const themeBtn=document.getElementById('themeBtn');
+function setTheme(t){document.documentElement.dataset.theme=t;localStorage.setItem('gc_theme',t);themeBtn.textContent=t==='dark'?'Helles Design':'Dunkles Design';}
+setTheme(localStorage.getItem('gc_theme')||'dark');
+themeBtn.onclick=function(){setTheme(document.documentElement.dataset.theme==='dark'?'light':'dark');};
+
 if("serviceWorker" in navigator && location.protocol.indexOf("http")===0){
   navigator.serviceWorker.register("sw.js");
 }
-// Wenn der Browser-Speicher leer ist (z. B. gelöscht), aus der zweiten Kopie wiederherstellen
-let leer=true;
-try{ leer=localStorage.getItem("gc_seen")===null; }catch(e){}
-if(leer){ idbLoad(function(t){ if(t){ loadText(t,true); } }); }
 draw();
 map.fitBounds(L.latLngBounds(P.map(p=>[p[2],p[3]])),{padding:[30,30]});
+if(sel.length>=2)calculateRoadRoute();
 </script>
 </body>
 </html>

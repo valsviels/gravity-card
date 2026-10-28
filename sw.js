@@ -1,6 +1,6 @@
 // Netzwerk zuerst, bei Offline aus dem Speicher.
 // Eigene Dateien werden immer frisch geprüft (GitHub Pages cached sonst bis zu 10 Minuten).
-const CACHE = "gc-v2";
+const CACHE = "gc-v4";
 self.addEventListener("install", function () { self.skipWaiting(); });
 self.addEventListener("activate", function (e) { e.waitUntil(self.clients.claim()); });
 self.addEventListener("fetch", function (e) {
