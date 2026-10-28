@@ -21,15 +21,132 @@ header{padding:22px 22px 16px;position:sticky;top:0;background:var(--panel);back
 .sec{padding:14px 18px 0}.route{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px;box-shadow:var(--shadow)}.route h2{margin:0 0 9px;font-size:12px;text-transform:uppercase;letter-spacing:.7px;color:var(--mut)}.stop{display:flex;align-items:center;gap:8px;padding:4px 0;font-size:13px}.num{width:22px;height:22px;border-radius:50%;background:var(--route);color:white;font-weight:700;font-size:12px;display:flex;align-items:center;justify-content:center;flex:none}.stop .x{margin-left:auto;cursor:pointer;color:var(--mut);padding:0 4px}.orderbtn{border:1px solid var(--line);background:transparent;color:var(--mut);border-radius:6px;padding:1px 5px;cursor:pointer}.go{display:block;text-align:center;margin-top:10px;padding:11px;border-radius:11px;background:var(--route);color:white;font-weight:650;text-decoration:none}.go.off{background:var(--line);color:var(--mut);pointer-events:none}.clear{background:none;border:0;color:var(--mut);cursor:pointer;margin-top:8px;font-size:12px}.routeinfo{font-size:12px;color:var(--mut);margin-top:9px;line-height:1.5}.routeinfo strong{color:var(--fg)}
 .tools{display:flex;gap:7px;flex-wrap:wrap;padding:14px 18px 10px}.chip{border:1px solid var(--line);background:var(--card);color:var(--fg);padding:7px 12px;border-radius:99px;cursor:pointer;font-size:12px}.chip.on{background:var(--fg);color:var(--bg);border-color:var(--fg)}#q{flex:1;min-width:120px;background:var(--card);border:1px solid var(--line);color:var(--fg);padding:7px 13px;border-radius:99px;font-size:14px;outline:none}#q:focus{border-color:var(--route)}
 .park-detail{margin:0 18px 12px;padding:16px;background:var(--card);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow)}.detail-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:12px}.detail-head h2{font-size:19px;line-height:1.25;margin:0}.close-detail{border:1px solid var(--line);background:transparent;color:var(--fg);border-radius:9px;width:34px;height:34px;font-size:19px;cursor:pointer;flex:none}.detail-actions{margin:12px 0;display:flex;gap:7px;flex-wrap:wrap}.park-detail .trail-list{font-size:13px}.park-detail .trail-row{padding:7px 0;border-bottom:1px solid var(--line)}.item{margin:0 18px 8px;padding:13px;background:var(--card);border:1px solid var(--line);border-radius:14px;cursor:pointer;transition:border-color .15s,transform .15s}.item:hover{border-color:var(--mut);transform:translateY(-1px)}.item.seen{border-left:3px solid var(--seen)}.item.open{border-left:3px solid var(--open)}.name{font-weight:650;font-size:14px}.meta{color:var(--mut);font-size:12px;margin:3px 0 10px}.btns{display:flex;gap:6px;flex-wrap:wrap}.b{border:1px solid var(--line);background:transparent;color:var(--fg);border-radius:9px;padding:6px 10px;font-size:12px;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;justify-content:center}.b.on-seen{background:var(--seen);color:#06210f;border-color:var(--seen)}.b.on-route{background:var(--route);color:white;border-color:var(--route)}.pad{height:calc(20px + env(safe-area-inset-bottom))}.pin{width:30px;height:30px;border-radius:50%;border:3px solid #fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:12px;color:#fff;box-shadow:0 2px 8px rgba(0,0,0,.28)}.pin.open{background:var(--open)}.pin.seen{background:var(--seen);color:#06210f}.pin.sel{background:var(--route);color:#fff;transform:scale(1.15)}.pop b{font-size:15px}.pop .meta{margin-bottom:10px}.leg{margin:3px 0 4px 30px;font-size:11px;color:var(--mut)}.wx{margin-top:10px;font-size:12px}.days{display:flex;gap:12px;margin-top:6px;text-align:center;font-size:11px}.days div div{white-space:nowrap}.pop .mut{font-size:12px;color:var(--mut);margin:6px 0}.pop a{color:var(--route)}.trail-list{margin-top:8px;border-top:1px solid var(--line);padding-top:8px;font-size:12px}.trail-row{display:flex;justify-content:space-between;gap:10px;padding:4px 0}.trail-row span:last-child{color:var(--mut);white-space:nowrap}.trail-legend{display:flex;gap:8px;flex-wrap:wrap;font-size:11px;color:var(--mut);margin-top:8px}.dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:4px}
+
+/* Startseite und Biketage */
+#homeScreen,#logbookScreen{height:100dvh;overflow:auto;background:var(--bg);color:var(--fg)}
+.portal-wrap,.log-wrap{width:min(1040px,100%);margin:0 auto;padding:clamp(18px,4vw,42px);padding-bottom:calc(32px + env(safe-area-inset-bottom))}
+.portal-nav,.log-nav{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.portal-brand{font-weight:800;font-size:20px;letter-spacing:-.7px}.portal-brand span{color:var(--open)}
+.portal-main{padding-top:clamp(22px,5vh,54px)}
+.portal-eyebrow{font-size:11px;font-weight:750;letter-spacing:1.2px;color:var(--mut);text-transform:uppercase}
+.portal-main>h2{font-size:clamp(28px,5vw,42px);line-height:1.08;letter-spacing:-1.4px;margin:9px 0 22px;max-width:720px}
+.portal-intro{display:none}
+.portal-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.portal-card{min-height:215px;text-align:left;display:flex;flex-direction:column;align-items:stretch;gap:0;padding:clamp(16px,2.5vw,24px);border:1px solid var(--line);border-radius:20px;background:var(--card);color:var(--fg);cursor:pointer;box-shadow:var(--shadow);transition:transform .18s,border-color .18s}
+.portal-card:hover{transform:translateY(-2px);border-color:var(--mut)}
+.portal-card.explorer-card{background:linear-gradient(145deg,var(--card),color-mix(in srgb,var(--open) 7%,var(--card)))}
+.portal-card.ride-card{background:linear-gradient(145deg,var(--card),color-mix(in srgb,var(--seen) 8%,var(--card)))}
+.portal-card-top{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.portal-kicker{font-size:10px;letter-spacing:1px;font-weight:750;color:var(--mut)}
+.portal-symbol{display:flex;align-items:center;justify-content:center;width:42px;height:42px;border-radius:13px;background:var(--bg);border:1px solid var(--line);font-weight:800;font-size:20px}
+.portal-card h3{font-size:21px;letter-spacing:-.6px;margin:16px 0 5px}
+.portal-card p{color:var(--mut);font-size:12px;line-height:1.45;margin:0;max-width:370px}
+.portal-card-foot{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:auto;padding-top:18px;font-size:11px;font-weight:650}
+.portal-card-foot .muted{font-weight:500;color:var(--mut)}
+.portal-note{display:none}
+.portal-note strong{color:var(--fg);font-weight:650}
+.log-title-row{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:32px}
+.log-title-row h2{font-size:clamp(30px,5vw,42px);letter-spacing:-1.6px;margin:0}
+.log-description{margin:7px 0 24px;color:var(--mut);line-height:1.5}
+.log-form{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:18px;box-shadow:var(--shadow)}
+.log-form h3{margin:0 0 14px;font-size:16px}
+.gc-value-card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:15px 16px;margin:14px 0 16px;box-shadow:var(--shadow)}
+.gc-value-top{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+.gc-value-title{font-size:13px;font-weight:750}.gc-value-amount{font-size:15px;font-weight:800;white-space:nowrap;font-variant-numeric:tabular-nums}
+.gc-value-caption{font-size:11px;color:var(--mut);margin-top:3px}
+.gc-value-track{height:9px;background:var(--line);border-radius:99px;overflow:hidden;margin-top:12px}
+.gc-value-fill{width:0;height:100%;background:var(--seen);border-radius:99px;transition:width .25s}
+.gc-value-bottom{display:flex;justify-content:space-between;gap:8px;align-items:center;margin-top:8px;font-size:11px;color:var(--mut)}
+.gc-value-bottom strong{color:var(--fg)}
+.log-fields{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.log-field{display:flex;flex-direction:column;gap:6px;min-width:0}
+.log-field label{font-size:12px;color:var(--mut);font-weight:650}
+.log-field input,.log-field select,.log-field textarea,.year-select{width:100%;min-width:0;border:1px solid var(--line);border-radius:10px;padding:11px 12px;background:var(--bg);color:var(--fg);font:inherit;outline:none}
+.log-field input:focus,.log-field select:focus,.log-field textarea:focus,.year-select:focus{border-color:var(--route)}
+.log-field.note-field{grid-column:1/-1}
+.log-field textarea{resize:vertical;min-height:72px}
+.log-add{margin-top:14px;background:var(--seen);color:#071c10;border:0;border-radius:11px;padding:12px 16px;font-weight:750;font-size:14px;cursor:pointer;width:100%}
+.log-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:18px 0 26px}
+.log-stat{background:var(--card);border:1px solid var(--line);border-radius:15px;padding:14px;min-width:0}
+.log-stat strong{display:block;font-size:26px;letter-spacing:-.8px}.log-stat span{font-size:12px;color:var(--mut)}
+.log-history-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px}
+.log-history-head h3{font-size:18px;margin:0}.year-select{width:auto;min-width:110px;padding:8px 10px}
+.ride-entry{display:flex;align-items:flex-start;gap:12px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:13px;margin-bottom:8px}
+.ride-date{flex:none;width:54px;text-align:center;border-radius:10px;padding:7px 4px;background:var(--bg);border:1px solid var(--line)}
+.ride-date strong{display:block;font-size:20px;line-height:1.1}.ride-date span{display:block;font-size:10px;color:var(--mut);text-transform:uppercase;margin-top:3px}
+.ride-info{flex:1;min-width:0}.ride-park{font-size:14px;font-weight:750}.ride-meta{color:var(--mut);font-size:12px;margin-top:3px;overflow-wrap:anywhere}.ride-note{margin-top:6px;font-size:12px;white-space:pre-wrap;overflow-wrap:anywhere}
+.ride-delete{border:1px solid var(--line);color:var(--mut);background:transparent;border-radius:9px;width:32px;height:32px;cursor:pointer;flex:none}
+.log-empty{padding:24px;text-align:center;border:1px dashed var(--line);border-radius:14px;color:var(--mut);line-height:1.6}
+.home-back{display:inline-flex;align-items:center;gap:7px}
+@media(max-width:640px){.portal-wrap,.log-wrap{padding:16px;padding-bottom:calc(24px + env(safe-area-inset-bottom))}.portal-main{padding-top:clamp(22px,4vh,36px)}.portal-main>h2{font-size:30px;letter-spacing:-1px;margin:8px 0 17px}.portal-grid{grid-template-columns:1fr;gap:10px}.portal-card{min-height:145px;padding:16px;border-radius:17px}.portal-card h3{font-size:20px;margin:12px 0 4px}.portal-card p{font-size:12px}.portal-card-foot{padding-top:14px}.portal-symbol{width:38px;height:38px}.log-fields{grid-template-columns:1fr}.log-field.note-field{grid-column:auto}.log-stats{gap:7px}.log-stat{padding:11px}.log-stat strong{font-size:22px}.log-title-row{margin-top:22px}.gc-value-card{padding:13px}.gc-value-amount{font-size:14px}}
+
 @media(max-width:800px){#app{grid-template-columns:1fr;grid-template-rows:42% 58%}#map{order:-1}#side{border-right:0;border-top:1px solid var(--line)}header{padding-top:14px}.stats{margin-top:10px}.sec{padding-top:10px}}
 </style>
 </head>
 <body>
-<div id="app">
+<div id="homeScreen">
+  <div class="portal-wrap">
+    <div class="portal-nav">
+      <div class="portal-brand">Gravity <span>Card</span></div>
+      <button class="themebtn" id="portalThemeBtn" type="button">Dunkles Design</button>
+    </div>
+    <main class="portal-main">
+      <div class="portal-eyebrow">SAISON <span id="portalSeasonYear">2026</span></div>
+      <h2>Was willst du machen?</h2>
+      <div class="portal-grid">
+        <button class="portal-card explorer-card" type="button" onclick="openExplorer()">
+          <div class="portal-card-top"><span class="portal-kicker">ENTDECKEN</span><span class="portal-symbol">⌖</span></div>
+          <h3>Gravity Bikeparks</h3>
+          <p>Parks, Trails und Routen.</p>
+          <div class="portal-card-foot"><span id="portalParkCount">32 Bikeparks</span><span>Explorer öffnen ↗</span></div>
+        </button>
+        <button class="portal-card ride-card" type="button" onclick="openLogbook()">
+          <div class="portal-card-top"><span class="portal-kicker">TRACKEN</span><span class="portal-symbol">▦</span></div>
+          <h3>Meine Biketage</h3>
+          <p>Deine Besuche mit Datum.</p>
+          <div class="portal-card-foot"><span><strong id="portalRideDays">0</strong> Biketage · <strong id="portalRideParks">0</strong> Parks</span><span>Logbuch öffnen ↗</span></div>
+        </button>
+      </div>
+    </main>
+  </div>
+</div>
+
+<div id="logbookScreen" style="display:none">
+  <div class="log-wrap">
+    <div class="log-nav">
+      <div class="portal-brand">Gravity <span>Card</span></div>
+      <button class="themebtn home-back" type="button" onclick="goHome()">← Startseite</button>
+    </div>
+    <div class="log-title-row"><h2>Meine Biketage</h2></div>
+    <div class="gc-value-card" aria-label="Gravity Card Gegenwert">
+      <div class="gc-value-top"><div><div class="gc-value-title">Gravity Card Gegenwert</div><div class="gc-value-caption">60 € pro Biketag in einem Gravity-Card-Park · Kaufpreis 680 €</div></div><div class="gc-value-amount" id="gcValueAmount">0 € / 680 €</div></div>
+      <div class="gc-value-track" role="progressbar" aria-label="Angerechneter Wert der Gravity Card" aria-valuemin="0" aria-valuemax="680" aria-valuenow="0" id="gcValueProgress"><div class="gc-value-fill" id="gcValueFill"></div></div>
+      <div class="gc-value-bottom"><span id="gcValueDays">0 anrechenbare Biketage</span><strong id="gcValueMessage">Noch 680 € bis zum Kaufpreis.</strong></div>
+    </div>
+    <form class="log-form" id="rideForm" onsubmit="addRideDay(event)">
+      <h3>Neuen Biketag eintragen</h3>
+      <div class="log-fields">
+        <div class="log-field"><label for="ridePark">Bikepark</label><input id="ridePark" name="ridePark" list="rideParkSuggestions" autocomplete="off" placeholder="Park auswählen oder eingeben …" required><datalist id="rideParkSuggestions"></datalist></div>
+        <div class="log-field"><label for="rideDate">Datum</label><input id="rideDate" name="rideDate" type="date" required></div>
+        <div class="log-field note-field"><label for="rideNote">Notiz (optional)</label><textarea id="rideNote" name="rideNote" maxlength="500" placeholder="z. B. beste Trails, Bedingungen oder mit wem du gefahren bist …"></textarea></div>
+      </div>
+      <button class="log-add" type="submit">+ Biketag speichern</button>
+    </form>
+    <div class="log-stats">
+      <div class="log-stat"><strong id="logDays">0</strong><span>Biketage</span></div>
+      <div class="log-stat"><strong id="logVisits">0</strong><span>Parkbesuche</span></div>
+      <div class="log-stat"><strong id="logParkCount">0</strong><span>Verschiedene Parks</span></div>
+    </div>
+    <div class="log-history-head"><h3>Deine Übersicht</h3><select class="year-select" id="rideYear" aria-label="Jahr auswählen"></select></div>
+    <div id="rideHistory"></div>
+  </div>
+</div>
+
+<div id="app" style="display:none">
   <div id="side">
     <header>
-      <div class="headrow"><div><h1>Gravity <span>Card</span></h1><div class="sub">Bikepark Explorer · Saison 2026</div></div><button class="themebtn" id="themeBtn" type="button">Darstellung wechseln</button></div>
-      <div class="stats"><div class="stat"><strong id="statSeen">0</strong><span>Besucht</span></div><div class="stat"><strong id="statLeft">31</strong><span>Noch offen</span></div><div class="stat"><strong id="statCountries">0</strong><span>Länder</span></div></div>
+      <div class="headrow"><div><h1>Gravity <span>Card</span></h1><div class="sub">Bikepark Explorer · <span id="explorerSeasonYear">Saison 2026</span></div></div><div style="display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end"><button class="themebtn" type="button" onclick="goHome()">← Startseite</button><button class="themebtn" id="themeBtn" type="button">Darstellung wechseln</button></div></div>
+      <div class="stats"><div class="stat"><strong id="statSeen">0</strong><span>Besucht</span></div><div class="stat"><strong id="statLeft">31</strong><span>Noch offen</span></div><div class="stat"><strong id="statCountries">0</strong><span>Länder gesamt</span></div></div>
       <div class="bar"><div id="prog"></div></div>
       <div class="cnt" id="cnt"></div>
     </header>
@@ -89,10 +206,13 @@ const ROUTING_URL="https://router.project-osrm.org/route/v1/driving/";
 let routeInfo=null, routeLoading=false, routeError="", routeSeq=0;
 
 let seen={}, sel=[], filter="all", query="";
+let rideDays=[];
 try{
   seen=JSON.parse(localStorage.getItem("gc_seen")||"{}");
   sel=JSON.parse(localStorage.getItem("gc_sel")||"[]");
-}catch(e){ seen={}; sel=[]; }
+  rideDays=JSON.parse(localStorage.getItem("gc_ride_days")||"[]");
+  if(!Array.isArray(rideDays))rideDays=[];
+}catch(e){ seen={}; sel=[]; rideDays=[]; }
 
 function save(){
   try{
@@ -351,7 +471,7 @@ function draw(){
   document.getElementById("cnt").innerHTML="<b>"+n+"</b> von "+P.length+" Parks besucht";
   document.getElementById("statSeen").textContent=n;
   document.getElementById("statLeft").textContent=P.length-n;
-  document.getElementById("statCountries").textContent=new Set(P.filter((p,i)=>isSeen(i)).map(p=>p[1])).size;
+  document.getElementById("statCountries").textContent=new Set(P.map(p=>p[1])).size;
 
   // Marker
   for(let i=0;i<P.length;i++){
@@ -424,6 +544,157 @@ function draw(){
   document.getElementById("list").innerHTML=l;
 }
 
+// Startseite und persönliches Biketage-Logbuch
+function localDateString(d){
+  d=d||new Date();
+  return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
+}
+function saveRideDays(){try{localStorage.setItem("gc_ride_days",JSON.stringify(rideDays));}catch(e){alert("Speichern nicht möglich. Prüfe den verfügbaren Speicher deines Browsers.");}}
+function currentRideYear(){return String(new Date().getFullYear());}
+function ridesForYear(year){return rideDays.filter(function(r){return String(r.date||"").slice(0,4)===String(year);});}
+function rideSummary(year){
+  const entries=ridesForYear(year);
+  return {days:new Set(entries.map(r=>r.date)).size,visits:entries.length,parks:new Set(entries.map(r=>r.parkKey)).size};
+}
+function updatePortalStats(){
+  const seasonLabel=document.getElementById("portalSeasonYear"); if(seasonLabel)seasonLabel.textContent=currentRideYear();
+  const explorerSeason=document.getElementById("explorerSeasonYear"); if(explorerSeason)explorerSeason.textContent="Saison "+currentRideYear();
+  const visited=P.reduce((n,p,i)=>n+(isSeen(i)?1:0),0);
+  const el=document.getElementById("portalParkCount"); if(el)el.textContent=P.length+" Bikeparks · "+visited+" besucht";
+  const sum=rideSummary(currentRideYear());
+  const days=document.getElementById("portalRideDays"),parks=document.getElementById("portalRideParks");
+  if(days)days.textContent=sum.days;
+  if(parks)parks.textContent=sum.parks;
+}
+function goHome(){
+  activePark=null;
+  document.getElementById("app").style.display="none";
+  document.getElementById("logbookScreen").style.display="none";
+  document.getElementById("homeScreen").style.display="block";
+  draw(); updatePortalStats();
+  window.scrollTo(0,0);
+}
+function openExplorer(){
+  document.getElementById("homeScreen").style.display="none";
+  document.getElementById("logbookScreen").style.display="none";
+  document.getElementById("app").style.display="grid";
+  draw();
+  setTimeout(function(){map.invalidateSize();map.fitBounds(L.latLngBounds(P.map(p=>[p[2],p[3]])),{padding:[30,30]});},100);
+  if(sel.length>=2 && !routeInfo && !routeLoading)calculateRoadRoute();
+}
+function openLogbook(){
+  document.getElementById("homeScreen").style.display="none";
+  document.getElementById("app").style.display="none";
+  document.getElementById("logbookScreen").style.display="block";
+  renderRideLog();
+  window.scrollTo(0,0);
+}
+function setupRideForm(){
+  const suggestions=document.getElementById("rideParkSuggestions");
+  suggestions.innerHTML=P.map(p=>'<option value="'+escapeHtml(p[0])+'" label="'+escapeHtml((FLAG[p[1]]||"")+" "+p[1])+'"></option>').join("");
+  const date=document.getElementById("rideDate");
+  if(!date.value)date.value=localDateString();
+  const year=document.getElementById("rideYear");
+  year.onchange=function(){renderRideLog(year.value);};
+}
+function normalizeCustomPark(name){
+  return "custom:"+name.trim().normalize("NFKC").toLocaleLowerCase("de-AT").replace(/\s+/g," ");
+}
+function parkMatchText(text){
+  return String(text||"").toLocaleLowerCase("de-AT").normalize("NFD").replace(/[\u0300-\u036f]/g,"")
+    .replace(/bikeland|bike\s*park|bike|park|mtb|trails?|area|the|by\s+trek/g," ")
+    .replace(/[^a-z0-9]+/g," ").trim().replace(/\s+/g," ");
+}
+function recognizedGravityPark(name){
+  const value=String(name||"").trim().toLocaleLowerCase("de-AT");
+  const exact=P.find(p=>p[0].toLocaleLowerCase("de-AT")===value||p[4].toLocaleLowerCase("de-AT")===value);
+  if(exact)return exact;
+  const normalized=parkMatchText(name);
+  if(normalized.length<4)return null;
+  const matches=P.filter(p=>{
+    const candidate=parkMatchText(p[0]);
+    return candidate===normalized||candidate.includes(normalized)||normalized.includes(candidate);
+  });
+  return matches.length===1?matches[0]:null;
+}
+function addRideDay(event){
+  event.preventDefault();
+  const typedPark=document.getElementById("ridePark").value.trim();
+  const date=document.getElementById("rideDate").value;
+  const note=document.getElementById("rideNote").value.trim();
+  if(!typedPark||!date){alert("Bitte Bikepark und Datum eintragen.");return;}
+  const officialPark=recognizedGravityPark(typedPark);
+  const parkKey=officialPark?officialPark[4]:normalizeCustomPark(typedPark);
+  const parkName=officialPark?officialPark[0]:typedPark;
+  if(rideDays.some(r=>r.parkKey===parkKey&&r.date===date)){
+    alert("Für diesen Bikepark gibt es an diesem Datum bereits einen Eintrag.");return;
+  }
+  rideDays.push({id:Date.now().toString(36)+Math.random().toString(36).slice(2,7),parkKey:parkKey,parkName:parkName,date:date,note:note});
+  saveRideDays();
+  document.getElementById("rideNote").value="";
+  document.getElementById("ridePark").value="";
+  renderRideLog(date.slice(0,4));
+  updatePortalStats();
+  updateGravityCardValue();
+}
+function updateGravityCardValue(){
+  const eligible=rideDays.filter(r=>P.some(p=>p[4]===r.parkKey)).length;
+  const value=eligible*60;
+  const capped=Math.min(value,680);
+  const amount=document.getElementById("gcValueAmount");
+  const fill=document.getElementById("gcValueFill");
+  const progress=document.getElementById("gcValueProgress");
+  const days=document.getElementById("gcValueDays");
+  const message=document.getElementById("gcValueMessage");
+  if(amount)amount.textContent=value.toLocaleString("de-AT")+" € / 680 €";
+  if(fill)fill.style.width=Math.min(value/680*100,100)+"%";
+  if(progress){progress.setAttribute("aria-valuenow",String(capped));progress.setAttribute("aria-valuetext",value+" Euro Gegenwert");}
+  if(days)days.textContent=eligible+" anrechenbare Biketag"+(eligible===1?"":"e");
+  if(message){
+    if(value<680)message.textContent="Noch "+(680-value).toLocaleString("de-AT")+" € bis zum Kaufpreis.";
+    else if(value===680)message.textContent="Kaufpreis rechnerisch erreicht.";
+    else message.textContent="+"+(value-680).toLocaleString("de-AT")+" € über dem Kaufpreis.";
+  }
+}
+function deleteRideDay(id){
+  if(!confirm("Diesen Biketag wirklich löschen?"))return;
+  rideDays=rideDays.filter(r=>r.id!==id);
+  saveRideDays();
+  renderRideLog();updatePortalStats();updateGravityCardValue();
+}
+function formatRideDate(value){
+  const parts=String(value).split("-").map(Number);
+  if(parts.length!==3||!parts[0]||!parts[1]||!parts[2])return value;
+  return new Date(parts[0],parts[1]-1,parts[2]);
+}
+function renderRideLog(preferredYear){
+  const yearSelect=document.getElementById("rideYear");
+  if(!yearSelect)return;
+  const previous=preferredYear||yearSelect.value||currentRideYear();
+  const years=new Set([currentRideYear(),String(previous)]);
+  rideDays.forEach(r=>{if(r.date)years.add(String(r.date).slice(0,4));});
+  yearSelect.innerHTML=Array.from(years).sort((a,b)=>Number(b)-Number(a)).map(y=>'<option value="'+escapeHtml(y)+'">'+escapeHtml(y)+'</option>').join("");
+  yearSelect.value=years.has(String(previous))?String(previous):currentRideYear();
+  const year=yearSelect.value, summary=rideSummary(year);
+  document.getElementById("logDays").textContent=summary.days;
+  document.getElementById("logVisits").textContent=summary.visits;
+  document.getElementById("logParkCount").textContent=summary.parks;
+  const entries=ridesForYear(year).slice().sort((a,b)=>b.date.localeCompare(a.date)||String(a.parkKey).localeCompare(String(b.parkKey)));
+  const history=document.getElementById("rideHistory");
+  if(!entries.length){history.innerHTML='<div class="log-empty">Für '+escapeHtml(year)+' sind noch keine Biketage eingetragen.<br>Füge oben deinen ersten Besuch hinzu.</div>';updatePortalStats();updateGravityCardValue();return;}
+  const months=["Jän","Feb","Mär","Apr","Mai","Jun","Jul","Aug","Sep","Okt","Nov","Dez"];
+  history.innerHTML=entries.map(function(r){
+    const idx=P.findIndex(p=>p[4]===r.parkKey);
+    const park=idx>=0?P[idx][0]:(r.parkName||String(r.parkKey||"").replace(/^custom:/,""));
+    const country=idx>=0?(FLAG[P[idx][1]]+" "+P[idx][1]):"";
+    const d=formatRideDate(r.date);
+    const dateParts=d instanceof Date&&!isNaN(d.getTime())?{day:String(d.getDate()).padStart(2,"0"),month:months[d.getMonth()],full:d.toLocaleDateString("de-AT",{weekday:"long",day:"numeric",month:"long",year:"numeric"})}:{day:"?",month:"",full:r.date};
+    return '<article class="ride-entry"><div class="ride-date" title="'+escapeHtml(dateParts.full)+'"><strong>'+dateParts.day+'</strong><span>'+dateParts.month+'</span></div><div class="ride-info"><div class="ride-park">'+escapeHtml(park)+'</div><div class="ride-meta">'+escapeHtml(dateParts.full)+(country?' · '+escapeHtml(country):'')+'</div>'+(r.note?'<div class="ride-note">'+escapeHtml(r.note)+'</div>':'')+'</div><button class="ride-delete" type="button" aria-label="Biketag löschen" title="Eintrag löschen" onclick="deleteRideDay(&quot;'+escapeHtml(r.id)+'&quot;)">×</button></article>';
+  }).join("");
+  updatePortalStats();
+  updateGravityCardValue();
+}
+
 // Filter + Suche
 document.querySelectorAll(".chip[data-f]").forEach(function(b){
   b.onclick=function(){
@@ -436,15 +707,26 @@ document.querySelectorAll(".chip[data-f]").forEach(function(b){
 document.getElementById("q").oninput=function(e){ query=e.target.value.toLowerCase(); draw(); };
 
 const themeBtn=document.getElementById('themeBtn');
-function setTheme(t){document.documentElement.dataset.theme=t;localStorage.setItem('gc_theme',t);themeBtn.textContent=t==='dark'?'Helles Design':'Dunkles Design';}
-setTheme(localStorage.getItem('gc_theme')||'dark');
-themeBtn.onclick=function(){setTheme(document.documentElement.dataset.theme==='dark'?'light':'dark');};
+const portalThemeBtn=document.getElementById('portalThemeBtn');
+function setTheme(t){
+  document.documentElement.dataset.theme=t;
+  try{localStorage.setItem('gc_theme',t);}catch(e){}
+  const label=t==='dark'?'Helles Design':'Dunkles Design';
+  if(themeBtn)themeBtn.textContent=label;
+  if(portalThemeBtn)portalThemeBtn.textContent=label;
+}
+setTheme((function(){try{return localStorage.getItem('gc_theme')||'dark';}catch(e){return 'dark';}})());
+if(themeBtn)themeBtn.onclick=function(){setTheme(document.documentElement.dataset.theme==='dark'?'light':'dark');};
+if(portalThemeBtn)portalThemeBtn.onclick=function(){setTheme(document.documentElement.dataset.theme==='dark'?'light':'dark');};
 
 if("serviceWorker" in navigator && location.protocol.indexOf("http")===0){
   navigator.serviceWorker.register("sw.js");
 }
 draw();
-map.fitBounds(L.latLngBounds(P.map(p=>[p[2],p[3]])),{padding:[30,30]});
+setupRideForm();
+renderRideLog();
+updatePortalStats();
+updateGravityCardValue();
 if(sel.length>=2)calculateRoadRoute();
 </script>
 </body>
