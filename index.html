@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Gravity Card Bikeparks</title>
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#0f1115">
+<link rel="apple-touch-icon" href="icon-180.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Gravity">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<style>
+:root{--bg:#0f1115;--panel:#171a21;--card:#1f232c;--line:#2a2f3a;--fg:#eef1f6;--mut:#8b93a3;--open:#ff7a2f;--seen:#3ddc84;--route:#4da3ff;color-scheme:dark}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+body{background:var(--bg);color:var(--fg);font:15px/1.4 system-ui,-apple-system,"Segoe UI",sans-serif}
+#app{display:grid;grid-template-columns:400px 1fr;height:100%;height:100dvh}
+#side{padding-left:env(safe-area-inset-left);background:var(--panel);overflow-y:auto;border-right:1px solid var(--line)}
+#map{height:100%;background:#e8e4dc}
+.leaflet-container{font:inherit}
+.leaflet-popup-content-wrapper,.leaflet-popup-tip{background:var(--card);color:var(--fg);border-radius:14px}
+.leaflet-popup-content{margin:14px 16px}
+.leaflet-container a.leaflet-popup-close-button{color:var(--mut)}
+
+header{padding:20px 20px 14px;position:sticky;top:0;background:var(--panel);z-index:5;border-bottom:1px solid var(--line)}
+h1{margin:0;font-size:22px;letter-spacing:-.3px}
+h1 span{color:var(--open)}
+.sub{color:var(--mut);font-size:13px;margin-top:2px}
+.bar{height:8px;background:var(--card);border-radius:99px;margin-top:12px;overflow:hidden}
+.bar div{height:100%;width:0;background:linear-gradient(90deg,var(--open),var(--seen));border-radius:99px;transition:width .4s}
+.cnt{font-size:13px;margin-top:6px;color:var(--mut)}
+.cnt b{color:var(--fg)}
+
+.sec{padding:14px 20px 0}
+.route{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px}
+.route h2{margin:0 0 8px;font-size:14px;text-transform:uppercase;letter-spacing:.8px;color:var(--mut)}
+.stop{display:flex;align-items:center;gap:8px;padding:4px 0;font-size:14px}
+.num{width:22px;height:22px;border-radius:50%;background:var(--route);color:#06121f;font-weight:700;font-size:12px;display:flex;align-items:center;justify-content:center;flex:none}
+.stop .x{margin-left:auto;cursor:pointer;color:var(--mut);padding:0 4px}
+.go{display:block;text-align:center;margin-top:10px;padding:11px;border-radius:10px;background:var(--route);color:#06121f;font-weight:700;text-decoration:none}
+.go.off{background:var(--line);color:var(--mut);pointer-events:none}
+.clear{background:none;border:0;color:var(--mut);cursor:pointer;margin-top:8px;font-size:13px}
+
+.tools{display:flex;gap:8px;flex-wrap:wrap;padding:14px 20px 8px}
+.chip{border:1px solid var(--line);background:var(--card);color:var(--fg);padding:6px 14px;border-radius:99px;cursor:pointer;font-size:13px}
+.chip.on{background:var(--fg);color:var(--bg);border-color:var(--fg)}
+#q{flex:1;min-width:120px;background:var(--card);border:1px solid var(--line);color:var(--fg);padding:6px 14px;border-radius:99px;font-size:16px}
+
+.item{margin:0 20px 8px;padding:12px;background:var(--card);border:1px solid var(--line);border-radius:14px;cursor:pointer;transition:border-color .15s}
+.item:hover{border-color:var(--mut)}
+.item.seen{border-left:4px solid var(--seen)}
+.item.open{border-left:4px solid var(--open)}
+.name{font-weight:600}
+.meta{color:var(--mut);font-size:12px;margin:2px 0 10px}
+.btns{display:flex;gap:6px;flex-wrap:wrap}
+.b{border:1px solid var(--line);background:transparent;color:var(--fg);border-radius:8px;padding:5px 10px;font-size:12px;cursor:pointer;text-decoration:none}
+.b.on-seen{background:var(--seen);color:#06210f;border-color:var(--seen)}
+.b.on-route{background:var(--route);color:#06121f;border-color:var(--route)}
+.pad{height:calc(20px + env(safe-area-inset-bottom))}
+
+/* Marker */
+.pin{width:30px;height:30px;border-radius:50%;border:3px solid #fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:13px;color:#fff;box-shadow:0 2px 8px rgba(0,0,0,.5)}
+.pin.open{background:var(--open)}
+.pin.seen{background:var(--seen);color:#06210f}
+.pin.sel{background:var(--route);color:#06121f;transform:scale(1.2)}
+.pop b{font-size:16px}
+.pop .meta{margin-bottom:10px}
+
+.leg{margin:2px 0 2px 30px;font-size:12px;color:var(--mut)}
+.wx{margin-top:10px;font-size:13px}
+.days{display:flex;gap:12px;margin-top:6px;text-align:center;font-size:12px}
+.days div div{white-space:nowrap}
+.pop .mut{font-size:12px;color:var(--mut);margin:6px 0}
+.pop a{color:var(--route)}
+@media (max-width:800px){
+  #app{grid-template-columns:1fr;grid-template-rows:42% 58%}
+  #map{order:-1}
+  #side{border-right:0}
+}
+</style>
+</head>
+<body>
+<div id="app">
+  <div id="side">
+    <header>
+      <h1>Gravity <span>Card</span> Bikeparks</h1>
+      <div class="sub">Saison 2026 · 7 Länder · 1 Ticket</div>
+      <div class="bar"><div id="prog"></div></div>
+      <div class="cnt" id="cnt"></div>
+    </header>
+    <div class="sec"><div class="route" id="route"></div></div>
+    <div class="tools">
+      <button class="chip on" data-f="all">Alle</button>
+      <button class="chip" data-f="seen">Besucht</button>
+      <button class="chip" data-f="open">Offen</button>
+      <input id="q" placeholder="Suchen…">
+    </div>
+    <div class="tools">
+      <button class="chip" onclick="exportData()">⬇ Backup speichern</button>
+      <label class="chip">⬆ Backup laden<input type="file" accept=".json,.txt" hidden onchange="importData(event)"></label>
+      <button class="chip" onclick="copyData()">📋 Kopieren</button>
+      <button class="chip" onclick="pasteData()">📥 Einfügen</button>
+    </div>
+    <div id="list"></div>
+    <div class="pad"></div>
+  </div>
+  <div id="map"></div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script>
+// Name, Land, Breite, Länge, Seite auf gravity-card.com (zugleich der Schlüssel zum Speichern)
+const P=[
+["Epic Bikepark Leogang","AT",47.428,12.733,"epic-bikepark-leogang"],
+["Saalbach Hinterglemm","AT",47.391,12.637,"saalbach-hinterglemm"],
+["Bikepark Serfaus-Fiss-Ladis","AT",47.040,10.610,"bikepark-serfaus-fiss-ladis"],
+["Bikeland Schladming-Dachstein","AT",47.394,13.685,"schladming-dachstein"],
+["Bike Kingdom Lenzerheide","CH",46.729,9.556,"bike-kindom-park-lenzerheide"],
+["Bikepark Brandnertal","AT",47.087,9.734,"bikepark-brandnertal"],
+["Bike Republic Sölden","AT",46.966,11.007,"bike-republic-soelden"],
+["3 Länder Enduro Trails","AT",46.889,10.500,"3-laender-enduro-trails"],
+["Bad Kleinkirchheim Flow Country Trail","AT",46.814,13.804,"bad-kleinkirchheimer-flow-country-trail"],
+["Biketrails Flims Laax","CH",46.810,9.260,"biketrails-flims-laax"],
+["Bikepark Innsbruck","AT",47.226,11.393,"bikepark-innsbruck"],
+["The Mother – Bikepark Winterberg","DE",51.190,8.536,"bikepark-winterberg"],
+["MTB Zone Bikepark Geisskopf","DE",48.983,13.183,"mtb-zone-bikepark-geisskopf"],
+["Bikepark Špičák","CZ",49.176,13.291,"bikepark-spicak"],
+["Bikepark Semmering","AT",47.635,15.828,"bikepark-semmering"],
+["MTB Zone Bikepark Willingen","DE",51.298,8.605,"mtb-zone-bikepark-willingen"],
+["MTB Zone Bikepark Petzen","AT",46.519,14.790,"mtb-zone-bikepark-petzen"],
+["Bike Park Pohorje Maribor","SI",46.533,15.599,"maribor-bike-park"],
+["360° Flow Trails Kitzbühel Kirchberg","AT",47.446,12.392,"flowtrails-kitz-kirchberg"],
+["Bikepark Lienz","AT",46.830,12.800,"bikepark-lienz"],
+["Paganella Bike Park","IT",46.150,11.056,"paganella-bike"],
+["Szczyrk Bike Park by Trek","PL",49.710,19.030,"bike-park-szczyrk"],
+["Bikepark Kronplatz","IT",46.740,11.954,"bikepark-kronplatz"],
+["Val di Sole Bikepark","IT",46.330,10.850,"val-di-sole-bikepark"],
+["Wexl Trails","AT",47.615,16.010,"wexl-trails"],
+["Bike Beats Alta Badia","IT",46.551,11.876,"bike-beats-alta-badia"],
+["Silvretta Bike Arena Ischgl/Samnaun","AT",46.969,10.292,"silvretta-bike-arena-ischgl-samnaun"],
+["Bikepark Lermoos-Biberwier","AT",47.395,10.878,"bikepark-lermoos-biberwier"],
+["Mottolino Bikepark Livigno","IT",46.538,10.136,"mottolino-bikepark"],
+["Trailarea Turracher Höhe","AT",46.915,13.880,"trailarea-turracher-hoehe"],
+["Bike District Val di Fassa","IT",46.477,11.771,"bike-district-val-di-fassa"],
+["Trailpark Klínovec","CZ",50.393,12.970,"trailpark-klinovec"]
+];
+const FLAG={AT:"🇦🇹",CH:"🇨🇭",DE:"🇩🇪",CZ:"🇨🇿",SI:"🇸🇮",IT:"🇮🇹",PL:"🇵🇱"};
+const MAX=5;
+
+let seen={}, sel=[], filter="all", query="";
+try{
+  seen=JSON.parse(localStorage.getItem("gc_seen")||"{}");
+  sel=JSON.parse(localStorage.getItem("gc_sel")||"[]");
+}catch(e){ seen={}; sel=[]; }
+
+// Zweite Kopie in IndexedDB, wird bei jedem Speichern automatisch mitgeschrieben
+function idbOpen(cb){
+  if(!window.indexedDB){ return; }
+  const rq=indexedDB.open("gc",1);
+  rq.onupgradeneeded=function(){ rq.result.createObjectStore("kv"); };
+  rq.onsuccess=function(){ cb(rq.result); };
+}
+function idbSave(text){
+  idbOpen(function(db){ db.transaction("kv","readwrite").objectStore("kv").put(text,"backup"); });
+}
+function idbLoad(cb){
+  idbOpen(function(db){
+    const g=db.transaction("kv").objectStore("kv").get("backup");
+    g.onsuccess=function(){ cb(g.result); };
+  });
+}
+
+function save(){
+  try{
+    localStorage.setItem("gc_seen",JSON.stringify(seen));
+    localStorage.setItem("gc_sel",JSON.stringify(sel));
+  }catch(e){}
+  idbSave(backupText());
+}
+
+// Karte mit OpenStreetMap
+const map=L.map("map").setView([47.3,11.5],6);
+// Kartenstile ohne API-Key. Oben rechts umschaltbar.
+const strassen=L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}",{
+  maxZoom:19,
+  attribution:"Tiles © Esri"
+});
+const osm=L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png",{
+  maxZoom:19,
+  attribution:"© OpenStreetMap-Mitwirkende"
+});
+const gelaende=L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}",{
+  maxZoom:19,
+  attribution:"Tiles © Esri"
+});
+const satellit=L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",{
+  maxZoom:19,
+  attribution:"Tiles © Esri"
+});
+strassen.addTo(map);
+L.control.layers({"Straßen":strassen,"OpenStreetMap":osm,"Gelände":gelaende,"Satellit":satellit}).addTo(map);
+
+const markers=[];
+const line=L.polyline([],{color:"#4da3ff",weight:3,dashArray:"8 8"}).addTo(map);
+
+function url(i){ return "https://www.gravity-card.com/bikeparks/"+P[i][4]+"/?lang=en"; }
+function isSeen(i){ return seen[P[i][4]]===true; }
+
+function icon(i){
+  const k=sel.indexOf(i);
+  let cls="pin "+(isSeen(i)?"seen":"open");
+  let txt=isSeen(i)?"✓":"";
+  if(k>=0){ cls="pin sel"; txt=String(k+1); }
+  return L.divIcon({className:"",html:'<div class="'+cls+'">'+txt+"</div>",iconSize:[30,30],iconAnchor:[15,15],popupAnchor:[0,-18]});
+}
+
+// Wetter von Open-Meteo (gratis, ohne Key)
+const W={};
+function wIcon(c){
+  if(c===0){ return "☀️"; }
+  if(c<=2){ return "🌤️"; }
+  if(c===3){ return "☁️"; }
+  if(c<=48){ return "🌫️"; }
+  if(c<=57){ return "🌦️"; }
+  if(c<=67){ return "🌧️"; }
+  if(c<=77){ return "❄️"; }
+  if(c<=82){ return "🌧️"; }
+  if(c<=86){ return "🌨️"; }
+  return "⛈️";
+}
+function wHtml(i){
+  const w=W[i];
+  if(!w){ return '<div class="mut">Wetter lädt…</div>'; }
+  if(w==="err"){ return '<div class="mut">Wetter nicht verfügbar</div>'; }
+  const tage=["So","Mo","Di","Mi","Do","Fr","Sa"];
+  let h='<div class="wx"><b>Jetzt '+Math.round(w.current.temperature_2m)+'° '+wIcon(w.current.weather_code)+'</b> · Wind '+Math.round(w.current.wind_speed_10m)+' km/h<div class="days">';
+  for(let k=0;k<3;k++){
+    const d=new Date(w.daily.time[k]);
+    h+='<div><div>'+(k===0?"Heute":tage[d.getDay()])+'</div><div>'+wIcon(w.daily.weather_code[k])+'</div><div>'
+      +Math.round(w.daily.temperature_2m_max[k])+'°/'+Math.round(w.daily.temperature_2m_min[k])+'°</div><div>'
+      +Math.round(w.daily.precipitation_sum[k])+' mm</div></div>';
+  }
+  return h+"</div></div>";
+}
+function loadWeather(i){
+  if(W[i]){ return; }
+  const u="https://api.open-meteo.com/v1/forecast?latitude="+P[i][2]+"&longitude="+P[i][3]
+    +"&current=temperature_2m,weather_code,wind_speed_10m&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_sum&timezone=auto&forecast_days=3";
+  fetch(u).then(function(r){ return r.json(); }).then(function(j){
+    W[i]=j; markers[i].setPopupContent(popup(i));
+  }).catch(function(){
+    W[i]="err"; markers[i].setPopupContent(popup(i));
+  });
+}
+
+function popup(i){
+  return '<div class="pop"><b>'+P[i][0]+'</b><div class="meta">'+FLAG[P[i][1]]+" "+P[i][1]+'</div>'
+    +'<div class="btns">'
+    +'<button class="b'+(isSeen(i)?" on-seen":"")+'" onclick="toggleSeen('+i+')">✓ war da</button>'
+    +'<button class="b'+(sel.indexOf(i)>=0?" on-route":"")+'" onclick="toggleSel('+i+')">+ Route</button>'
+    +'<a class="b" href="'+url(i)+'" target="_blank" rel="noopener">Website ↗</a>'
+    +"</div>"
+    +wHtml(i)
+    +"</div>";
+}
+
+for(let i=0;i<P.length;i++){
+  const m=L.marker([P[i][2],P[i][3]],{icon:icon(i)}).bindPopup(()=>popup(i),{minWidth:250}).on("popupopen",()=>loadWeather(i));
+  markers.push(m);
+}
+
+function toggleSeen(i){
+  seen[P[i][4]]=!isSeen(i);
+  save(); draw();
+}
+function toggleSel(i){
+  const k=sel.indexOf(i);
+  if(k>=0){ sel.splice(k,1); }
+  else if(sel.length<MAX){ sel.push(i); }
+  else { alert("Maximal "+MAX+" Parks für die Route."); }
+  save(); draw();
+}
+function km(a,b){
+  const r=Math.PI/180;
+  const dLat=(P[b][2]-P[a][2])*r, dLon=(P[b][3]-P[a][3])*r;
+  const x=Math.pow(Math.sin(dLat/2),2)+Math.cos(P[a][2]*r)*Math.cos(P[b][2]*r)*Math.pow(Math.sin(dLon/2),2);
+  return 2*6371*Math.asin(Math.sqrt(x));
+}
+// Grobe Fahrzeit: Straße ≈ 1,3 × Luftlinie, Schnitt 70 km/h
+function fahrt(k){
+  const min=Math.round(k*1.3/70*60);
+  return Math.floor(min/60)+" h "+(min%60)+" min";
+}
+function perms(a){
+  if(a.length<=1){ return [a]; }
+  const out=[];
+  for(let k=0;k<a.length;k++){
+    const rest=a.slice(0,k).concat(a.slice(k+1));
+    const sub=perms(rest);
+    for(let j=0;j<sub.length;j++){ out.push([a[k]].concat(sub[j])); }
+  }
+  return out;
+}
+function pathLen(o){
+  let t=0;
+  for(let k=1;k<o.length;k++){ t+=km(o[k-1],o[k]); }
+  return t;
+}
+function bestOrder(){
+  let best=sel, bestLen=pathLen(sel);
+  const all=perms(sel);
+  for(let j=0;j<all.length;j++){
+    const l=pathLen(all[j]);
+    if(l<bestLen){ best=all[j]; bestLen=l; }
+  }
+  sel=best; save(); draw();
+}
+function backupText(){
+  return JSON.stringify({seen:seen},null,2);
+}
+// iPhone: Teilen-Menü (z. B. "In Dateien sichern"), sonst normaler Download
+function exportData(){
+  const file=new File([backupText()],"gravity-card-backup.json",{type:"text/plain"});
+  if(navigator.canShare && navigator.canShare({files:[file]})){
+    navigator.share({files:[file]}).catch(function(){});
+    return;
+  }
+  const a=document.createElement("a");
+  a.href=URL.createObjectURL(file);
+  a.download="gravity-card-backup.json";
+  a.click();
+}
+function copyData(){
+  navigator.clipboard.writeText(backupText()).then(function(){
+    alert("Backup kopiert. Zum Beispiel in Notizen einfügen und aufheben.");
+  }).catch(function(){
+    prompt("Diesen Text kopieren:",backupText());
+  });
+}
+function pasteData(){
+  const t=prompt("Backup-Text hier einfügen:");
+  if(t){ loadText(t); }
+}
+function loadText(t,quiet){
+  try{
+    const j=JSON.parse(t);
+    seen=j.seen||{};
+    save(); draw();
+    if(!quiet){ alert("Backup geladen."); }
+  }catch(err){ alert("Backup konnte nicht gelesen werden."); }
+}
+function importData(e){
+  const f=e.target.files[0];
+  if(!f){ return; }
+  const rd=new FileReader();
+  rd.onload=function(){ loadText(rd.result); };
+  rd.readAsText(f);
+}
+function removeStop(k){ sel.splice(k,1); save(); draw(); }
+function clearRoute(){ sel=[]; save(); draw(); }
+function focusPark(i){
+  if(!map.hasLayer(markers[i])){ markers[i].addTo(map); }
+  map.flyTo([P[i][2],P[i][3]],11);
+  markers[i].openPopup();
+}
+
+function show(i){
+  if(filter==="seen" && !isSeen(i)){ return false; }
+  if(filter==="open" && isSeen(i)){ return false; }
+  if(query && P[i][0].toLowerCase().indexOf(query)<0){ return false; }
+  return true;
+}
+
+function routeUrl(){
+  const c=sel.map(i=>P[i][2]+","+P[i][3]);
+  let u="https://www.google.com/maps/dir/?api=1&travelmode=driving&origin="+c[0]+"&destination="+c[c.length-1];
+  if(c.length>2){ u+="&waypoints="+c.slice(1,-1).join("%7C"); }
+  return u;
+}
+
+function draw(){
+  // Fortschritt
+  let n=0;
+  for(let i=0;i<P.length;i++){ if(isSeen(i)){ n++; } }
+  document.getElementById("prog").style.width=(n/P.length*100)+"%";
+  document.getElementById("cnt").innerHTML="<b>"+n+"</b> von "+P.length+" Parks besucht";
+
+  // Marker
+  for(let i=0;i<P.length;i++){
+    markers[i].setIcon(icon(i));
+    if(show(i)){ if(!map.hasLayer(markers[i])){ markers[i].addTo(map); } }
+    else { map.removeLayer(markers[i]); }
+    if(markers[i].isPopupOpen()){ markers[i].setPopupContent(popup(i)); }
+  }
+  line.setLatLngs(sel.map(i=>[P[i][2],P[i][3]]));
+
+  // Route-Box
+  let r="<h2>Route · "+sel.length+" / "+MAX+"</h2>";
+  if(sel.length===0){ r+='<div class="sub">Wähle bis zu 5 Parks mit „+ Route“ aus.</div>'; }
+  let total=0;
+  for(let k=0;k<sel.length;k++){
+    if(k>0){
+      const d=km(sel[k-1],sel[k]); total+=d;
+      r+='<div class="leg">↓ '+Math.round(d)+' km Luftlinie · ca. '+fahrt(d)+'</div>';
+    }
+    r+='<div class="stop"><div class="num">'+(k+1)+"</div>"+P[sel[k]][0]+'<span class="x" onclick="removeStop('+k+')">✕</span></div>';
+  }
+  if(sel.length>=2){ r+='<div class="leg">Gesamt: '+Math.round(total)+' km Luftlinie · ca. '+fahrt(total)+' (geschätzt)</div>'; }
+  if(sel.length>=3){ r+='<button class="b" style="margin-top:8px" onclick="bestOrder()">⚡ Beste Reihenfolge</button>'; }
+  if(sel.length>=2){ r+='<a class="go" href="'+routeUrl()+'" target="_blank" rel="noopener">Route in Google Maps öffnen</a>'; }
+  else { r+='<a class="go off">Mindestens 2 Parks wählen</a>'; }
+  if(sel.length>0){ r+='<button class="clear" onclick="clearRoute()">Route leeren</button>'; }
+  document.getElementById("route").innerHTML=r;
+
+  // Liste
+  let l="";
+  for(let i=0;i<P.length;i++){
+    if(!show(i)){ continue; }
+    l+='<div class="item '+(isSeen(i)?"seen":"open")+'" onclick="focusPark('+i+')">'
+      +'<div class="name">'+P[i][0]+"</div>"
+      +'<div class="meta">'+FLAG[P[i][1]]+" "+P[i][1]+"</div>"
+      +'<div class="btns" onclick="event.stopPropagation()">'
+      +'<button class="b'+(isSeen(i)?" on-seen":"")+'" onclick="toggleSeen('+i+')">✓ war da</button>'
+      +'<button class="b'+(sel.indexOf(i)>=0?" on-route":"")+'" onclick="toggleSel('+i+')">+ Route</button>'
+      +'<a class="b" href="'+url(i)+'" target="_blank" rel="noopener">Website ↗</a>'
+      +"</div></div>";
+  }
+  if(l===""){ l='<div class="sec sub">Nichts gefunden.</div>'; }
+  document.getElementById("list").innerHTML=l;
+}
+
+// Filter + Suche
+document.querySelectorAll(".chip").forEach(function(b){
+  b.onclick=function(){
+    document.querySelectorAll(".chip").forEach(function(x){ x.classList.remove("on"); });
+    b.classList.add("on");
+    filter=b.getAttribute("data-f");
+    draw();
+  };
+});
+document.getElementById("q").oninput=function(e){ query=e.target.value.toLowerCase(); draw(); };
+
+if("serviceWorker" in navigator && location.protocol.indexOf("http")===0){
+  navigator.serviceWorker.register("sw.js");
+}
+// Wenn der Browser-Speicher leer ist (z. B. gelöscht), aus der zweiten Kopie wiederherstellen
+let leer=true;
+try{ leer=localStorage.getItem("gc_seen")===null; }catch(e){}
+if(leer){ idbLoad(function(t){ if(t){ loadText(t,true); } }); }
+draw();
+map.fitBounds(L.latLngBounds(P.map(p=>[p[2],p[3]])),{padding:[30,30]});
+</script>
+</body>
+</html>
