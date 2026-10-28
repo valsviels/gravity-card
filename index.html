@@ -75,7 +75,6 @@ h1 span{color:var(--open)}
 .days div div{white-space:nowrap}
 .pop .mut{font-size:12px;color:var(--mut);margin:6px 0}
 .pop a{color:var(--route)}
-.pop input[type=date]{background:var(--panel);color:var(--fg);border:1px solid var(--line);border-radius:6px;padding:2px 4px;font-size:16px;margin:2px 0}
 @media (max-width:800px){
   #app{grid-template-columns:1fr;grid-template-rows:42% 58%}
   #map{order:-1}
@@ -151,19 +150,35 @@ const P=[
 const FLAG={AT:"🇦🇹",CH:"🇨🇭",DE:"🇩🇪",CZ:"🇨🇿",SI:"🇸🇮",IT:"🇮🇹",PL:"🇵🇱"};
 const MAX=5;
 
-let seen={}, sel=[], dates={}, filter="all", query="";
+let seen={}, sel=[], filter="all", query="";
 try{
   seen=JSON.parse(localStorage.getItem("gc_seen")||"{}");
   sel=JSON.parse(localStorage.getItem("gc_sel")||"[]");
-  dates=JSON.parse(localStorage.getItem("gc_dates")||"{}");
-}catch(e){ seen={}; sel=[]; dates={}; }
+}catch(e){ seen={}; sel=[]; }
+
+// Zweite Kopie in IndexedDB, wird bei jedem Speichern automatisch mitgeschrieben
+function idbOpen(cb){
+  if(!window.indexedDB){ return; }
+  const rq=indexedDB.open("gc",1);
+  rq.onupgradeneeded=function(){ rq.result.createObjectStore("kv"); };
+  rq.onsuccess=function(){ cb(rq.result); };
+}
+function idbSave(text){
+  idbOpen(function(db){ db.transaction("kv","readwrite").objectStore("kv").put(text,"backup"); });
+}
+function idbLoad(cb){
+  idbOpen(function(db){
+    const g=db.transaction("kv").objectStore("kv").get("backup");
+    g.onsuccess=function(){ cb(g.result); };
+  });
+}
 
 function save(){
   try{
     localStorage.setItem("gc_seen",JSON.stringify(seen));
     localStorage.setItem("gc_sel",JSON.stringify(sel));
-    localStorage.setItem("gc_dates",JSON.stringify(dates));
   }catch(e){}
+  idbSave(backupText());
 }
 
 // Karte mit OpenStreetMap
@@ -200,20 +215,6 @@ function icon(i){
   let txt=isSeen(i)?"✓":"";
   if(k>=0){ cls="pin sel"; txt=String(k+1); }
   return L.divIcon({className:"",html:'<div class="'+cls+'">'+txt+"</div>",iconSize:[30,30],iconAnchor:[15,15],popupAnchor:[0,-18]});
-}
-
-// Ampel: Zeitraum pro Park selbst eintragen (Seite liefert keine Park-Zeiten)
-function ampel(i){
-  const d=dates[P[i][4]];
-  if(!d || !d[0] || !d[1]){ return "⚪ Zeiten nicht eingetragen"; }
-  const heute=new Date().toISOString().slice(0,10);
-  return (heute>=d[0] && heute<=d[1]) ? "🟢 offen" : "🔴 geschlossen";
-}
-function setDate(i,k,v){
-  const sl=P[i][4];
-  if(!dates[sl]){ dates[sl]=["",""]; }
-  dates[sl][k]=v;
-  save(); draw();
 }
 
 // Wetter von Open-Meteo (gratis, ohne Key)
@@ -256,16 +257,14 @@ function loadWeather(i){
 }
 
 function popup(i){
-  const d=dates[P[i][4]]||["",""];
-  return '<div class="pop"><b>'+P[i][0]+'</b><div class="meta">'+FLAG[P[i][1]]+" "+P[i][1]+" · "+ampel(i)+'</div>'
+  return '<div class="pop"><b>'+P[i][0]+'</b><div class="meta">'+FLAG[P[i][1]]+" "+P[i][1]+'</div>'
     +'<div class="btns">'
     +'<button class="b'+(isSeen(i)?" on-seen":"")+'" onclick="toggleSeen('+i+')">✓ war da</button>'
     +'<button class="b'+(sel.indexOf(i)>=0?" on-route":"")+'" onclick="toggleSel('+i+')">+ Route</button>'
     +'<a class="b" href="'+url(i)+'" target="_blank" rel="noopener">Website ↗</a>'
     +"</div>"
     +wHtml(i)
-    +'<div class="mut">Offen von <input type="date" value="'+d[0]+'" onchange="setDate('+i+',0,this.value)"> bis <input type="date" value="'+d[1]+'" onchange="setDate('+i+',1,this.value)">'
-    +' · <a href="https://www.gravity-card.com/opening-hours/?lang=en" target="_blank" rel="noopener">Öffnungszeiten ↗</a></div></div>';
+    +"</div>";
 }
 
 for(let i=0;i<P.length;i++){
@@ -320,7 +319,7 @@ function bestOrder(){
   sel=best; save(); draw();
 }
 function backupText(){
-  return JSON.stringify({seen:seen,dates:dates},null,2);
+  return JSON.stringify({seen:seen},null,2);
 }
 // iPhone: Teilen-Menü (z. B. "In Dateien sichern"), sonst normaler Download
 function exportData(){
@@ -345,12 +344,12 @@ function pasteData(){
   const t=prompt("Backup-Text hier einfügen:");
   if(t){ loadText(t); }
 }
-function loadText(t){
+function loadText(t,quiet){
   try{
     const j=JSON.parse(t);
-    seen=j.seen||{}; dates=j.dates||{};
+    seen=j.seen||{};
     save(); draw();
-    alert("Backup geladen.");
+    if(!quiet){ alert("Backup geladen."); }
   }catch(err){ alert("Backup konnte nicht gelesen werden."); }
 }
 function importData(e){
@@ -422,7 +421,7 @@ function draw(){
     if(!show(i)){ continue; }
     l+='<div class="item '+(isSeen(i)?"seen":"open")+'" onclick="focusPark('+i+')">'
       +'<div class="name">'+P[i][0]+"</div>"
-      +'<div class="meta">'+FLAG[P[i][1]]+" "+P[i][1]+" · "+ampel(i)+"</div>"
+      +'<div class="meta">'+FLAG[P[i][1]]+" "+P[i][1]+"</div>"
       +'<div class="btns" onclick="event.stopPropagation()">'
       +'<button class="b'+(isSeen(i)?" on-seen":"")+'" onclick="toggleSeen('+i+')">✓ war da</button>'
       +'<button class="b'+(sel.indexOf(i)>=0?" on-route":"")+'" onclick="toggleSel('+i+')">+ Route</button>'
@@ -447,6 +446,10 @@ document.getElementById("q").oninput=function(e){ query=e.target.value.toLowerCa
 if("serviceWorker" in navigator && location.protocol.indexOf("http")===0){
   navigator.serviceWorker.register("sw.js");
 }
+// Wenn der Browser-Speicher leer ist (z. B. gelöscht), aus der zweiten Kopie wiederherstellen
+let leer=true;
+try{ leer=localStorage.getItem("gc_seen")===null; }catch(e){}
+if(leer){ idbLoad(function(t){ if(t){ loadText(t,true); } }); }
 draw();
 map.fitBounds(L.latLngBounds(P.map(p=>[p[2],p[3]])),{padding:[30,30]});
 </script>
